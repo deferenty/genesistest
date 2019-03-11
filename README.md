@@ -1,5 +1,5 @@
 <p align="center">
-    <h1 align="center">Test task/h1>
+    <h1 align="center">Test task</h1>
 </p>
 
 Для запуска задания неоходимо.
