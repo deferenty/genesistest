@@ -18,14 +18,23 @@ class RecordController extends Controller
 {
     /**
      * ActiveRecord class name for saving data
-     * 
      * @var string
      */
     public $modelClass;
     
+    /**
+     * Class for saving record
+     * @var SaveRecordInterface 
+     */
     protected $apiSaver;
 
-
+    /**
+     * Constructor
+     * @param string $id
+     * @param Module $module
+     * @param SaveRecordInterface $apiSaver
+     * @param array $config
+     */
     public function __construct($id, $module, SaveRecordInterface $apiSaver, $config = []) {
         $this->apiSaver = $apiSaver;
         parent::__construct($id, $module, $config);
@@ -53,6 +62,10 @@ class RecordController extends Controller
         ];
     }
 
+    /**
+     * Create record action
+     * @return mixed
+     */
     public function actionCreate()
     {
         $model = Yii::createObject($this->modelClass);

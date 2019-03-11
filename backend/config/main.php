@@ -42,15 +42,20 @@ return [
             'backend\components\apisaver\SaveRecordInterface' => [
                 'class' => 'backend\components\apisaver\SaveRecordQueue',
             ],
-            // Select one of two implementations of SaveRecordJobInterface
+            /*Select one of two implementations of SaveRecordJobInterface*/
             'backend\components\apisaver\SaveRecordJobInterface' => [
-                // save every record separately
-                'class' => 'backend\components\apisaver\SaveRecordJobSingle'
-                
-                // save records in batch query
-//                'class' => 'backend\components\apisaver\SaveRecordJobBatch',
-//                'batchSize' => 3,
-//                'delay' => 10
+                /*
+                First implementation
+                save every record separately
+                */
+//                'class' => 'backend\components\apisaver\SaveRecordJobSingle',
+                /*
+                Second one
+                save records in batch query
+                 */
+                'class' => 'backend\components\apisaver\SaveRecordJobBatch',
+                'batchSize' => 10,
+                'delay' => 10,
             ] ,
         ]
     ]

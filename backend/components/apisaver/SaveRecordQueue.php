@@ -8,7 +8,8 @@ use Yii;
 use yii\db\ActiveRecordInterface;
 
 /**
- * Description of SaveRecordQueue
+ * Process saving record by creating queue job and pushing it. 
+ * You should have some queue component to use it
  *
  * @author petrovich
  */
@@ -38,6 +39,6 @@ class SaveRecordQueue implements SaveRecordInterface
         $delay = $this->job->getDelay();
         
         $this->job->beforeJobPushed();
-        $queueId = Yii::$app->queue->delay($delay)->push($this->job);
+        Yii::$app->queue->delay($delay)->push($this->job);
     }
 }

@@ -13,7 +13,7 @@ use yii\web\Controller;
 class PhonebookController extends Controller
 {
     /**
-     * Name of model class
+     * ActiveRecord class name for searching data
      * @var string
      */
     public $modelClass;

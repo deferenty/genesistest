@@ -1,60 +1,108 @@
 <p align="center">
-    <a href="https://github.com/yiisoft" target="_blank">
-        <img src="https://avatars0.githubusercontent.com/u/993323" height="100px">
-    </a>
-    <h1 align="center">Yii 2 Advanced Project Template</h1>
-    <br>
+    <h1 align="center">Test task/h1>
 </p>
 
-Yii 2 Advanced Project Template is a skeleton [Yii 2](http://www.yiiframework.com/) application best for
-developing complex Web applications with multiple tiers.
-
-The template includes three tiers: front end, back end, and console, each of which
-is a separate Yii application.
-
-The template is designed to work in a team development environment. It supports
-deploying the application in different environments.
-
-Documentation is at [docs/guide/README.md](docs/guide/README.md).
-
-[![Latest Stable Version](https://img.shields.io/packagist/v/yiisoft/yii2-app-advanced.svg)](https://packagist.org/packages/yiisoft/yii2-app-advanced)
-[![Total Downloads](https://img.shields.io/packagist/dt/yiisoft/yii2-app-advanced.svg)](https://packagist.org/packages/yiisoft/yii2-app-advanced)
-[![Build Status](https://travis-ci.org/yiisoft/yii2-app-advanced.svg?branch=master)](https://travis-ci.org/yiisoft/yii2-app-advanced)
-
-DIRECTORY STRUCTURE
--------------------
+Для запуска задания неоходимо.
+1. Скопировать или склонировать проект
+2. Установить Yii2 и необходимые компоненты
+```
+composer install
+```
+3. Инициализировать приложение
+```
+php init
+```
+4. Настроить компонент db - соединение с MySQL базой данных (файл common/config/main-local.php)
+5. Провести миграцию
+```
+php yii migrate/up create_phonebook_table
+```
+6. Настроить веб-сервер и файл hosts, при необходимости. Пример конфигурации nginx
 
 ```
-common
-    config/              contains shared configurations
-    mail/                contains view files for e-mails
-    models/              contains model classes used in both backend and frontend
-    tests/               contains tests for common classes    
-console
-    config/              contains console configurations
-    controllers/         contains console controllers (commands)
-    migrations/          contains database migrations
-    models/              contains console-specific model classes
-    runtime/             contains files generated during runtime
-backend
-    assets/              contains application assets such as JavaScript and CSS
-    config/              contains backend configurations
-    controllers/         contains Web controller classes
-    models/              contains backend-specific model classes
-    runtime/             contains files generated during runtime
-    tests/               contains tests for backend application    
-    views/               contains view files for the Web application
-    web/                 contains the entry script and Web resources
-frontend
-    assets/              contains application assets such as JavaScript and CSS
-    config/              contains frontend configurations
-    controllers/         contains Web controller classes
-    models/              contains frontend-specific model classes
-    runtime/             contains files generated during runtime
-    tests/               contains tests for frontend application
-    views/               contains view files for the Web application
-    web/                 contains the entry script and Web resources
-    widgets/             contains frontend widgets
-vendor/                  contains dependent 3rd-party packages
-environments/            contains environment-based overrides
+    server {
+        charset utf-8;
+        client_max_body_size 128M;
+
+        listen 127.0.0.1:80; ## listen for ipv4
+
+        server_name genesis.test;
+        root        /var/www/html/genesis.test/frontend/web/;
+        index       index.php;
+
+        access_log  /var/www/html/genesis.test/frontend/runtime/nginx-access.log;
+        error_log   /var/www/html/genesis.test/frontend/runtime/nginx-error.log;
+
+        location / {
+            # Redirect everything that isn't a real file to index.php
+            try_files $uri $uri/ /index.php$is_args$args;
+
+        # deny accessing php files for the /assets directory
+        location ~ ^/assets/.*\.php$ {
+            deny all;
+        }
+
+        location ~ \.php$ {
+    	    try_files $uri =404;
+    	    include snippets/fastcgi-php.conf;
+	    fastcgi_pass unix:/run/php/php7.2-fpm.sock;
+        }
+
+        location ~* /\. {
+            deny all;
+        }
+    }
+
+    server {
+        charset utf-8;
+        client_max_body_size 128M;
+
+        listen 127.0.0.1:80; ## listen for ipv4
+        #listen [::]:80 default_server ipv6only=on; ## listen for ipv6
+
+        server_name api.genesis.test;
+        root        /var/www/html/genesis.test/backend/web/;
+        index       index.php;
+
+        access_log  /var/www/html/genesis.test/backend/runtime/nginx-access.log;
+        error_log   /var/www/html/genesis.test/backend/runtime/nginx-error.log;
+
+        location / {
+            # Redirect everything that isn't a real file to index.php
+            try_files $uri $uri/ /index.php$is_args$args;
+        }
+
+        # deny accessing php files for the /assets directory
+        location ~ ^/assets/.*\.php$ {
+            deny all;
+        }
+
+        location ~ \.php$ {
+    	    try_files $uri =404;
+    	    include snippets/fastcgi-php.conf;
+    	    fastcgi_pass unix:/run/php/php7.2-fpm.sock;
+        }
+
+        location ~* /\. {
+            deny all;
+        }
+    }
 ```
+7. Иметь Redis в базовой конфигурации (обратить внимание, чтобы джобы не подхватывал не тот воркер)
+
+Фронтенд часть реализована в frontend части Yii2 (табличка пользователей-телефов с фильтром по имени и сортировкой)
+Страница доступна по адресу genesis.test/phonebook/index
+
+API реализовано в backend части приложения.
+Для отправки JSON-ов использовать somedomain.com/record/create
+Принимает POST запросы.
+
+Полученые запросы валидируются и складываются в очередь. Есть два варианта дальнейшей обработки.
+1. Сохраненные модели сохраняется каждая отдельно запросом в базу данных
+(класс backend\components\apisaver\SaveRecordJobSingle)
+2. Выставляется задержка и количество моделей в одной группе. Они складируются в кеш
+и записываются, по истечению времени задержки одним запросом к базе.
+
+Для менеджера очередей и кеша использовался Redis. Зависимости настраиваются в 
+backend/config/main.php в секции container
+

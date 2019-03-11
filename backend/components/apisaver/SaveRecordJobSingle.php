@@ -5,18 +5,22 @@ namespace backend\components\apisaver;
 use backend\components\apisaver\SaveRecordJobInterface;
 
 /**
- * Separately saves every single record
+ * Separately saves every single record. You can set some delay for job executing
  *
  * @author petrovich
  */
 class SaveRecordJobSingle implements SaveRecordJobInterface
 {
+    /**
+     * Delay in seconds for executing queue job
+     * @inheritDoc
+     */
     public $delay = 0;
     
     /**
      * @var yii\db\ActiveRecordInterface
      */
-    protected $model;
+    private $model;
 
 
     /**

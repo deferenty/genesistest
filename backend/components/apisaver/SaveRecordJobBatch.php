@@ -7,7 +7,7 @@ use Yii;
 
 /**
  * Job to aggregate models in cache to be inserted to the database in 
- * one query
+ * one query. Job will be started after delay.
  *
  * @author petrovich
  */
@@ -19,6 +19,7 @@ class SaveRecordJobBatch implements SaveRecordJobInterface
     public $cacheKeyPrefix = 'batchRecordSaver';
     
     /**
+     * Delay in seconds for executing queue job
      * @inheritDoc
      */
     public $delay = 20;
@@ -32,7 +33,7 @@ class SaveRecordJobBatch implements SaveRecordJobInterface
     /**
      * @var yii\db\ActiveRecordInterface
      */
-    protected $model;
+    private $model;
     
     /**
      * Gets delay
@@ -54,7 +55,7 @@ class SaveRecordJobBatch implements SaveRecordJobInterface
     
     /**
      * Saves to the cache timestamp before pushing job. If records are saved
-     * in batch and with delay, it will help us to save all records
+     * in batch and with delay, it will help us to save all records.
      */
     public function beforeJobPushed()
     {
@@ -74,7 +75,8 @@ class SaveRecordJobBatch implements SaveRecordJobInterface
      * from cache are saved to database.
      * @param Queue $queue
      */
-    public function execute($queue) {
+    public function execute($queue)
+    {
         $cache = Yii::$app->cache;
         $cacheKey = $this->getCacheKey();
         $storedModels = $cache->get($cacheKey);
