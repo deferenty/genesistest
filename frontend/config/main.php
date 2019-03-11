@@ -36,14 +36,19 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        /*
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
             ],
         ],
-        */
     ],
     'params' => $params,
+    'container' => [
+        'definitions' => [
+            'frontend\controllers\PhonebookController' => [
+                'modelClass' => 'frontend\models\PhonebookSearch'
+            ]
+        ]
+    ]
 ];

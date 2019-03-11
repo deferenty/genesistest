@@ -15,15 +15,9 @@ return [
     'components' => [
         'request' => [
             'csrfParam' => '_csrf-backend',
-        ],
-        'user' => [
-            'identityClass' => 'common\models\User',
-            'enableAutoLogin' => true,
-            'identityCookie' => ['name' => '_identity-backend', 'httpOnly' => true],
-        ],
-        'session' => [
-            // this is the name of the session cookie used for login on the backend
-            'name' => 'advanced-backend',
+            'parsers' => [
+                'application/json' => 'yii\web\JsonParser',
+            ],
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
@@ -34,17 +28,30 @@ return [
                 ],
             ],
         ],
-        'errorHandler' => [
-            'errorAction' => 'site/error',
-        ],
-        /*
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
-            'rules' => [
-            ],
         ],
-        */
     ],
     'params' => $params,
+    'container' => [
+        'definitions' => [
+            'backend\controllers\RecordController' => [
+                'modelClass' => 'common\models\Phonebook'
+            ],
+            'backend\components\apisaver\SaveRecordInterface' => [
+                'class' => 'backend\components\apisaver\SaveRecordQueue',
+            ],
+            // Select one of two implementations of SaveRecordJobInterface
+            'backend\components\apisaver\SaveRecordJobInterface' => [
+                // save every record separately
+                'class' => 'backend\components\apisaver\SaveRecordJobSingle'
+                
+                // save records in batch query
+//                'class' => 'backend\components\apisaver\SaveRecordJobBatch',
+//                'batchSize' => 3,
+//                'delay' => 10
+            ] ,
+        ]
+    ]
 ];
